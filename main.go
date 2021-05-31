@@ -33,9 +33,15 @@ func init() {
 }
 
 func main() {
-	file, err := os.Create(Config.Filepath)
+	file, err := os.OpenFile(Config.Filepath, os.O_APPEND|os.O_CREATE|os.O_WRONLY, 0644)
+
 	if err != nil {
-		log.Fatalf(err.Error())
+		file, err = os.Create(Config.Filepath)
+		if err != nil {
+			log.Fatalf(err.Error())
+		}
+
+		log.Print(fmt.Sprintf("generated [%s]", Config.Filepath))
 	}
 	defer file.Close()
 
@@ -53,7 +59,8 @@ func main() {
 	}
 	writer.Flush()
 
-	log.Print(fmt.Sprintf("generated! [%s]", Config.Filepath))
+	fmt.Println("done.")
+	os.Exit(0)
 }
 
 func getSecret() (string, error) {
